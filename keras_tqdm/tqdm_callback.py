@@ -17,7 +17,8 @@ class TQDMCallback(Callback):
                  show_inner=True,
                  show_outer=True,
                  output_file=stderr,
-                 initial=0):
+                 initial=0,
+                 step_override=None):
         """
         Construct a callback that will create and update progress bars.
 
@@ -49,6 +50,7 @@ class TQDMCallback(Callback):
         self.running_logs = None
         self.inner_count = None
         self.initial = initial
+        self.step_override = step_override
 
     def tqdm(self, desc, total, leave, initial=0):
         """
@@ -82,14 +84,17 @@ class TQDMCallback(Callback):
     def on_epoch_begin(self, epoch, logs={}):
         self.epoch = epoch
         desc = self.inner_description_initial.format(epoch=self.epoch)
-        self.mode = 0  # samples
-        if 'samples' in self.params:
-            self.inner_total = self.params['samples']
-        elif 'nb_sample' in self.params:
-            self.inner_total = self.params['nb_sample']
+        if self.step_override is not None:
+            self.inner_total = step_override
         else:
-            self.mode = 1  # steps
-            self.inner_total = self.params['steps']
+            self.mode = 0  # samples
+            if 'samples' in self.params:
+                self.inner_total = self.params['samples']
+            elif 'nb_sample' in self.params:
+                self.inner_total = self.params['nb_sample']
+            else:
+                self.mode = 1  # steps
+                self.inner_total = self.params['steps']
         if self.show_inner:
             self.tqdm_inner = self.build_tqdm_inner(desc=desc, total=self.inner_total)
         self.inner_count = 0
@@ -112,7 +117,7 @@ class TQDMCallback(Callback):
         pass
 
     def on_batch_end(self, batch, logs={}):
-        if self.mode == 0:
+        if self.step_override is None and self.mode == 0:
             update = logs['size']
         else:
             update = 1
