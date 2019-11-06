@@ -85,7 +85,7 @@ class TQDMCallback(Callback):
         self.epoch = epoch
         desc = self.inner_description_initial.format(epoch=self.epoch)
         if self.step_override is not None:
-            self.inner_total = step_override
+            self.inner_total = self.step_override
         else:
             self.mode = 0  # samples
             if 'samples' in self.params:
