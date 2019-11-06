@@ -15,7 +15,8 @@ class TQDMNotebookCallback(TQDMCallback):
                  leave_inner=False,
                  leave_outer=True,
                  output_file=sys.stderr,
-                 initial=0, **kwargs):
+                 initial=0, 
+                 step_override=None, **kwargs):
         super(TQDMNotebookCallback, self).__init__(outer_description=outer_description,
                                                    inner_description_initial=inner_description_initial,
                                                    inner_description_update=inner_description_update,
@@ -24,7 +25,8 @@ class TQDMNotebookCallback(TQDMCallback):
                                                    leave_inner=leave_inner,
                                                    leave_outer=leave_outer,
                                                    output_file=output_file,
-                                                   initial=initial, **kwargs)
+                                                   initial=initial, 
+                                                   step_override=step_override, **kwargs)
 
     def tqdm(self, desc, total, leave, initial=0):
         """
